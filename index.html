@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Fair Price</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f5f5f5
+}
+
+nav{
+background:white;
+padding:15px 30px;
+display:flex;
+justify-content:space-between;
+box-shadow:0 2px 5px rgba(0,0,0,0.1)
+}
+
+.hero{
+text-align:center;
+padding:40px;
+background:linear-gradient(to right,#4facfe,#00f2fe);
+color:white
+}
+
+input,textarea,select{
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+margin:5px;
+width:250px
+}
+
+button{
+padding:10px 20px;
+border:none;
+border-radius:8px;
+background:#007bff;
+color:white;
+cursor:pointer
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px
+}
+
+.card{
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 2px 5px rgba(0,0,0,0.1)
+}
+
+.card img{
+width:100%;
+height:180px;
+object-fit:cover
+}
+
+.card-content{
+padding:15px
+}
+
+.section{
+padding:30px
+}
+
+.loader{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(255,255,255,0.8);
+justify-content:center;
+align-items:center
+}
+
+.spinner{
+border:6px solid #f3f3f3;
+border-top:6px solid #007bff;
+border-radius:50%;
+width:50px;
+height:50px;
+animation:spin 1s linear infinite
+}
+
+@keyframes spin{
+0%{transform:rotate(0)}
+100%{transform:rotate(360deg)}
+}
+
+.login-popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+justify-content:center;
+align-items:center
+}
+
+.login-box{
+background:white;
+padding:20px;
+border-radius:10px;
+width:300px
+}
+
+footer{
+background:#222;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:30px
+}
+
+.badge{
+background:#ff4d4d;
+color:white;
+padding:5px 10px;
+border-radius:8px;
+font-size:12px
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="loader" id="loader">
+<div class="spinner"></div>
+</div>
+
+<nav>
+<h2>Travel Fair Price</h2>
+<button onclick="openLogin()">Login</button>
+</nav>
+
+<div class="hero">
+<h1>Travel Smart & Avoid Scams</h1>
+<p>Find hotels, food and fair prices instantly</p>
+<input type="text" id="destination" placeholder="Enter destination">
+<button onclick="searchHotels()">Search</button>
+</div>
+
+<!-- Recommended Cities -->
+
+<div class="section">
+<h2>Recommended Cities</h2>
+
+<div class="cards">
+
+<div class="card" onclick="selectCity('Goa')">
+<img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e">
+<div class="card-content"><h3>Goa</h3></div>
+</div>
+
+<div class="card" onclick="selectCity('Jaipur')">
+<img src="https://images.unsplash.com/photo-1477587458883-47145ed94245">
+<div class="card-content"><h3>Jaipur</h3></div>
+</div>
+
+<div class="card" onclick="selectCity('Manali')">
+<img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470">
+<div class="card-content"><h3>Manali</h3></div>
+</div>
+
+<div class="card" onclick="selectCity('Varanasi')">
+<img src="https://images.unsplash.com/photo-1561361058-c24cecae35ca">
+<div class="card-content"><h3>Varanasi</h3></div>
+</div>
+
+</div>
+</div>
+
+<!-- Budget -->
+
+<div class="section">
+<h2>Travel Budget Calculator</h2>
+
+<input type="number" id="days" placeholder="Days">
+<input type="number" id="people" placeholder="People">
+
+<button onclick="calculateBudget()">Calculate</button>
+
+<p id="totalBudget"></p>
+
+</div>
+
+<!-- Hotels -->
+
+<div class="section" id="results" style="display:none">
+<h2 id="title"></h2>
+<div class="cards" id="hotelCards"></div>
+</div>
+
+<!-- History -->
+
+<div class="section" id="historySection" style="display:none">
+<h2>History</h2>
+
+<div class="card">
+<img id="historyImage">
+<div class="card-content">
+<p id="historyText"></p>
+</div>
+</div>
+
+</div>
+
+<!-- Hidden Gems -->
+
+<div class="section" id="hiddenSection" style="display:none">
+<h2>Hidden Gems</h2>
+<div class="cards" id="hiddenCards"></div>
+</div>
+
+<!-- Feedback -->
+
+<div class="section">
+
+<h2>User Feedback</h2>
+
+<input type="text" id="username" placeholder="Your Name"><br>
+
+<select id="rating">
+<option value="">Rate Experience</option>
+<option>⭐</option>
+<option>⭐⭐</option>
+<option>⭐⭐⭐</option>
+<option>⭐⭐⭐⭐</option>
+<option>⭐⭐⭐⭐⭐</option>
+</select><br>
+
+<textarea id="feedback" placeholder="Your Feedback"></textarea><br>
+
+<button onclick="submitFeedback()">Submit</button>
+
+<div id="feedbackList"></div>
+
+</div>
+
+<!-- Login -->
+
+<div class="login-popup" id="loginPopup">
+<div class="login-box">
+<h3>Login</h3>
+<input type="text" placeholder="Username"><br>
+<input type="password" placeholder="Password"><br><br>
+<button onclick="closeLogin()">Login</button>
+<button onclick="closeLogin()">Close</button>
+</div>
+</div>
+
+<footer>
+IEEE Hackathon Project | Travel Fair Price
+</footer>
+
+<script>
+
+const hotels=[
+
+{name:"Budget Hotel",price:"₹1000",food:"Breakfast",scam:false,image:"https://images.unsplash.com/photo-1566073771259-6a8506099945"},
+
+{name:"Comfort Hotel",price:"₹2500",food:"Dinner",scam:false,image:"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"},
+
+{name:"Luxury Hotel",price:"₹9000",food:"All Meals",scam:true,image:"https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"}
+
+]
+
+const historyData={
+
+Goa:{
+text:"Goa was ruled by Portuguese and famous for beaches.",
+image:"https://images.unsplash.com/photo-1512343879784-a960bf40e7f2"
+},
+
+Jaipur:{
+text:"Jaipur is Pink City founded by Maharaja Jai Singh.",
+image:"https://images.unsplash.com/photo-1599661046289-e31897846e41"
+},
+
+Manali:{
+text:"Manali is famous hill station in Himachal Pradesh.",
+image:"https://images.unsplash.com/photo-1501785888041-af3ef285b470"
+},
+
+Varanasi:{
+text:"Varanasi is oldest city of India.",
+image:"https://images.unsplash.com/photo-1561361058-c24cecae35ca"
+}
+
+}
+
+const hiddenGems={
+
+Goa:[
+{name:"Butterfly Beach",image:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e"},
+{name:"Divar Island",image:"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1"}
+],
+
+Jaipur:[
+{name:"Nahargarh Fort",image:"https://images.unsplash.com/photo-1599661046289-e31897846e41"},
+{name:"Panna Meena Stepwell",image:"https://images.unsplash.com/photo-1597047084897-51e81819a499"}
+],
+
+Manali:[
+{name:"Jogini Falls",image:"https://images.unsplash.com/photo-1501785888041-af3ef285b470"},
+{name:"Hampta Pass",image:"https://images.unsplash.com/photo-1482192596544-9eb780fc7f66"}
+],
+
+Varanasi:[
+{name:"Assi Ghat",image:"https://images.unsplash.com/photo-1561361058-c24cecae35ca"},
+{name:"Sarnath",image:"https://images.unsplash.com/photo-1564501049412-61c2a3083791"}
+]
+
+}
+
+function searchHotels(){
+
+let dest=document.getElementById("destination").value
+
+document.getElementById("loader").style.display="flex"
+
+setTimeout(()=>{
+
+document.getElementById("loader").style.display="none"
+
+document.getElementById("results").style.display="block"
+
+document.getElementById("title").innerText="Hotels in "+dest
+
+let cards=""
+
+hotels.forEach(h=>{
+
+let badge=h.scam?'<span class="badge">High Price</span>':''
+
+cards+=`
+
+<div class="card">
+<img src="${h.image}">
+<div class="card-content">
+<h3>${h.name} ${badge}</h3>
+<p>${h.price}</p>
+<p>${h.food}</p>
+</div>
+</div>
+
+`
+
+})
+
+document.getElementById("hotelCards").innerHTML=cards
+
+document.getElementById("historySection").style.display="block"
+document.getElementById("historyText").innerText=historyData[dest].text
+document.getElementById("historyImage").src=historyData[dest].image
+
+document.getElementById("hiddenSection").style.display="block"
+
+let hidden=""
+
+hiddenGems[dest].forEach(place=>{
+
+hidden+=`
+
+<div class="card">
+<img src="${place.image}">
+<div class="card-content">
+<h3>${place.name}</h3>
+</div>
+</div>
+
+`
+
+})
+
+document.getElementById("hiddenCards").innerHTML=hidden
+
+},1500)
+
+}
+
+function selectCity(city){
+document.getElementById("destination").value=city
+searchHotels()
+}
+
+function calculateBudget(){
+
+let days=document.getElementById("days").value
+let people=document.getElementById("people").value
+
+let total=days*people*3500
+
+document.getElementById("totalBudget").innerText="Estimated Budget ₹"+total
+
+}
+
+function submitFeedback(){
+
+let name=document.getElementById("username").value
+let rating=document.getElementById("rating").value
+let feedback=document.getElementById("feedback").value
+
+let card=`
+
+<div class="card">
+<div class="card-content">
+<h3>${name}</h3>
+<p>${rating}</p>
+<p>${feedback}</p>
+</div>
+</div>
+
+`
+
+document.getElementById("feedbackList").innerHTML+=card
+
+}
+
+function openLogin(){
+document.getElementById("loginPopup").style.display="flex"
+}
+
+function closeLogin(){
+document.getElementById("loginPopup").style.display="none"
+}
+
+</script>
+
+</body>
+</html>
